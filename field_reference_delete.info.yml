@@ -1,0 +1,8 @@
+name: Field reference delete
+type: module
+description: Immediately removes references to a deleted entity from fields stored in an SQL database.
+core: 8.x
+package: Custom
+dependencies:
+  - field
+

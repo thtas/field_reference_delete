@@ -1,0 +1,4 @@
+services:
+  field_reference_delete:
+    class: Drupal\field_reference_delete\FieldReferenceDelete
+    arguments: ['@entity_type.manager', '@plugin.manager.field.field_type']

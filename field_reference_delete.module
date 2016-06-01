@@ -1,0 +1,34 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implementation of hook_FORM_ID_form_alter to alter the field_config_edit_form
+ * to include custom settings for this module.
+ * 
+ * @param type $form
+ * @param FormStateInterface $form_state
+ * @param type $form_id
+ */
+function reference_delete_form_field_config_edit_form_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $field_config = $form_state->getFormObject()->getEntity();
+  if (\Drupal::service('field_reference_delete')->isReferenceField($field_config)) {
+      list($base_entity_type, $base_bundle) = explode(".", $field_config->id());
+      $bundle_label = \Drupal::service('entity_type.bundle.info')
+          ->getBundleInfo($base_entity_type)[$base_bundle]['label'];
+      $form['third_party_settings']['field_reference_delete']['delete_on_reference_delete'] = [
+        '#type' => 'radios',
+        '#title' => t('Should the %bundle_label be deleted when this feild references deleted entities?', ['%bundle_label' => $bundle_label]),
+        '#options' => [
+          0 => t('No'),
+          1 => t('Yes'),
+        ],
+        '#default_value' => $field_config->getThirdPartySetting('field_reference_delete', 'delete_on_reference_delete', 1)
+    ];
+    }
+}
+
+function field_reference_delete_entity_delete(EntityInterface $entity) {
+  \Drupal::service('field_reference_delete')->delete($entity);
+}
